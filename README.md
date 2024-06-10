@@ -1,1 +1,1 @@
-# A repository of personal coding practice 
+# A repository for personal coding practice 
