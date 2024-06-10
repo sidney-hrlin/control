@@ -43,6 +43,8 @@ class PIDController {
         if (first_hit_) {
             first_hit_ = false;
         } else {
+            // apply a first-order lowpass filter on differential term for
+            // smoother differential term
             diff = (1.0 - alpha_) * (error - prev_error_) / conf_.dt +
                    alpha_ * prev_diff_;
         }
@@ -62,7 +64,7 @@ class PIDController {
         // calculate command
         double cmd = conf_.kp * error + integral_ + conf_.kd * diff;
 
-        // applu command saturation
+        // apply command saturation
         if (conf_.cmd_bound.has_value()) {
             auto [cmd_lb, cmd_ub] = conf_.cmd_bound.value();
             if (cmd > cmd_ub) {
@@ -115,7 +117,7 @@ class PIDController {
         const double offset = (cmd > cmd_ub)   ? (cmd_ub - cmd)
                               : (cmd < cmd_lb) ? (cmd_lb - cmd)
                                                : 0.0;
-        // apply a negative feedback on intergral
+        // apply a negative feedback on intergral term
         integral_ += conf_.kb.value() * offset + conf_.ki * error * conf_.dt;
     }
 
